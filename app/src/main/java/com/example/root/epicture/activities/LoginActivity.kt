@@ -1,20 +1,16 @@
-package com.example.root.epicture
+package com.example.root.epicture.activities
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Debug
 import android.util.Log
-import android.util.LogPrinter
 import android.view.View
+import android.webkit.CookieManager
 import android.webkit.WebView
-import android.webkit.WebSettings
 import android.webkit.WebViewClient
-import java.io.Console
-import java.util.logging.Logger
+import com.example.root.epicture.R
+import com.example.root.epicture.objects.UserObject
 
 
 class Login : AppCompatActivity() {
@@ -25,11 +21,21 @@ class Login : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
         imgurWebView = findViewById(R.id.LoginWebView);
+
+        if (intent.hasExtra("disconnect")) {
+            Log.d("Disconnect", "LOGGING OUT")
+            imgurWebView!!.clearCache(true)
+            imgurWebView!!.clearHistory()
+            CookieManager.getInstance().removeAllCookies(null);
+            CookieManager.getInstance().flush();
+        }
+
         imgurWebView!!.setBackgroundColor(Color.TRANSPARENT);
         val settings = imgurWebView!!.getSettings()
         settings.setSupportMultipleWindows(true);
-        imgurWebView!!.loadUrl("https://api.imgur.com/oauth2/authorize?client_id="+UserObject.clientId+"&response_type=token&state=APPLICATION_STATE");
+        imgurWebView!!.loadUrl("https://api.imgur.com/oauth2/authorize?client_id=" + UserObject.clientId + "&response_type=token&state=APPLICATION_STATE");
         imgurWebView!!.getSettings().setJavaScriptEnabled(true);
         imgurWebView!!.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
@@ -39,12 +45,18 @@ class Login : AppCompatActivity() {
                     startActivity(mainActivity)
                     finish()
                 } else {
-                    imgurWebView!!.loadUrl("https://api.imgur.com/oauth2/authorize?client_id="+UserObject.clientId+"&response_type=token&state=APPLICATION_STATE")
+                    imgurWebView!!.loadUrl("https://api.imgur.com/oauth2/authorize?client_id=" + UserObject.clientId + "&response_type=token&state=APPLICATION_STATE")
                 }
                 return true
             }
         }
     }
+
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
 
     fun login(view: View) {
         val intent = Intent(this, MainActivity::class.java)
@@ -53,12 +65,12 @@ class Login : AppCompatActivity() {
 
 
     fun splitUrl(url: String, view: WebView) {
-        var outerSplit = url.split ("#")[1].split("&");
+        var outerSplit = url.split("#")[1].split("&");
 
         var index = 0;
         for (s: String in outerSplit) {
-            var innerSplit = s.split ("=");
-            when(index) {
+            var innerSplit = s.split("=");
+            when (index) {
                 0 -> {
                     UserObject.token = innerSplit[1];
                 }

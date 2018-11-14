@@ -1,4 +1,4 @@
-package com.example.root.epicture
+package com.example.root.epicture.fragments
 
 import android.app.Activity
 import android.content.Intent
@@ -6,17 +6,17 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.TextInputEditText
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.Fragment
 import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.example.root.epicture.R
+import com.example.root.epicture.objects.UserObject
+import com.example.root.epicture.activities.DetailActivity
 import com.example.root.epicture.models.CreateImageFromJson
-import com.example.root.epicture.models.Image
 import okhttp3.*
 import okhttp3.MultipartBody
 import org.json.JSONObject

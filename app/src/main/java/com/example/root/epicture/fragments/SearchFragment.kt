@@ -1,22 +1,21 @@
-package com.example.root.epicture
+package com.example.root.epicture.fragments
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ProgressBar
+import android.widget.*
+import com.example.root.epicture.adapters.GalleryAdapter
+import com.example.root.epicture.R
+import com.example.root.epicture.objects.UserObject
+import com.example.root.epicture.activities.GalleryActivity
 import com.example.root.epicture.models.CreateGalleryFromJson
 import com.example.root.epicture.models.Gallery
 import okhttp3.*
@@ -24,17 +23,32 @@ import org.json.JSONObject
 import java.io.IOException
 import java.io.Serializable
 
-class SearchFragment : Fragment(), GalleryAdapter.onItemClickListener {
+
+class SearchFragment : Fragment(), GalleryAdapter.onItemClickListener, AdapterView.OnItemSelectedListener {
     var swipeContainer: SwipeRefreshLayout? = null
 
-    var _galleries= ArrayList<Gallery>()
+    var _galleries = ArrayList<Gallery>()
     var _images = ArrayList<com.example.root.epicture.models.Image>()
+
+    var _linearLayoutFitler: LinearLayout? = null
 
     var _inputView: TextInputLayout? = null
     var _recyclerView: RecyclerView? = null
     var _pbLoad: ProgressBar? = null
     var _adapter: GalleryAdapter? = null
     val _client = OkHttpClient()
+
+    var _filter: String = ""
+    var _window: String = ""
+
+    var _dropdownFilter: Spinner? = null
+    var _dropdownWindow: Spinner? = null
+    var _items: Array<String>? = null
+    var _itemsWindow: Array<String>? = null
+
+    var _spinner_adapter: ArrayAdapter<String>? = null
+    var _spinner_adapterWindow: ArrayAdapter<String>? = null
+
 
     override fun onItemClick(position: Number) {
         val detailIntent: Intent = Intent(this@SearchFragment.context, GalleryActivity::class.java)
@@ -47,12 +61,52 @@ class SearchFragment : Fragment(), GalleryAdapter.onItemClickListener {
         return inflater.inflate(R.layout.fragment_search, null)
     }
 
+
+    override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+        when (parent.id) {
+            R.id.spinner_window -> {
+                _window = parent.getItemAtPosition(position).toString()
+            }
+            R.id.spinner_sort -> {
+                _filter = parent.getItemAtPosition(position).toString()
+            }
+        }
+    }
+
+    override fun onNothingSelected(arg0: AdapterView<*>) {
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<Button>(R.id.search_button).setOnClickListener(View.OnClickListener {
+        // Search button
+        view.findViewById<ImageButton>(R.id.search_button).setOnClickListener(View.OnClickListener {
             searchGallery(_inputView!!.editText!!.text.toString())
         })
+        // Filter button
+        view.findViewById<ImageButton>(R.id.search_button_filter)!!.setOnClickListener {
+            when (_linearLayoutFitler!!.visibility) {
+                View.GONE -> _linearLayoutFitler!!.visibility = View.VISIBLE
+                View.VISIBLE -> _linearLayoutFitler!!.visibility = View.GONE
+            }
+        }
+
+        _linearLayoutFitler = view.findViewById(R.id.search_filter)
+
+        _dropdownFilter = view.findViewById(R.id.spinner_sort)
+        _items = arrayOf("viral", "top", "time")
+        _spinner_adapter =
+                ArrayAdapter(this@SearchFragment.context, android.R.layout.simple_spinner_dropdown_item, _items)
+        _dropdownFilter!!.setAdapter(_spinner_adapter)
+        _dropdownFilter!!.setOnItemSelectedListener(this@SearchFragment)
+
+        _dropdownWindow = view.findViewById(R.id.spinner_window)
+        _itemsWindow = arrayOf("day", "week", "month", "year", "all")
+        _spinner_adapterWindow =
+                ArrayAdapter(this@SearchFragment.context, android.R.layout.simple_spinner_dropdown_item, _itemsWindow)
+        _dropdownWindow!!.adapter = _spinner_adapterWindow
+        _dropdownWindow!!.setOnItemSelectedListener(this@SearchFragment)
 
         _pbLoad = view.findViewById(R.id.search_pb)
         _inputView = view.findViewById(R.id.search_input)
@@ -62,6 +116,7 @@ class SearchFragment : Fragment(), GalleryAdapter.onItemClickListener {
 
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_settings -> return true
@@ -69,17 +124,13 @@ class SearchFragment : Fragment(), GalleryAdapter.onItemClickListener {
         }
     }
 
-
-
-
     fun searchGallery(search: String) {
-
 
         _images.clear()
         _galleries.clear()
 
         _pbLoad!!.visibility = View.VISIBLE
-        val url = "https://api.imgur.com/3/gallery/search/viral/?q=" + search
+        val url = "https://api.imgur.com/3/gallery/search/" + _filter + "/" + _window + "?q=" + search
         val request = Request.Builder()
             .url(url)
             .addHeader("Authorization", "Bearer " + UserObject.token)

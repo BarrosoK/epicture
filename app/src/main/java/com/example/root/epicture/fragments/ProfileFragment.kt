@@ -1,7 +1,6 @@
-package com.example.root.epicture
+package com.example.root.epicture.fragments
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
@@ -17,17 +16,20 @@ import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
 import java.io.Serializable
-import android.R.attr.data
 import android.app.Activity.RESULT_OK
+import com.example.root.epicture.adapters.ImageAdapter
+import com.example.root.epicture.R
+import com.example.root.epicture.objects.UserObject
+import com.example.root.epicture.activities.DetailActivity
 
 
-class ProfileFragment : Fragment(), Adapter.onItemClickListener {
+class ProfileFragment : Fragment(), ImageAdapter.onItemClickListener {
     var swipeContainer: SwipeRefreshLayout? = null
 
 
     var _avatarImageview: ImageView? = null
     var _recyclerView: RecyclerView? = null
-    var _adapter: Adapter? = null
+    var _Image_adapter: ImageAdapter? = null
     var _images = ArrayList<com.example.root.epicture.models.Image>()
     val _client = OkHttpClient()
 
@@ -103,11 +105,12 @@ class ProfileFragment : Fragment(), Adapter.onItemClickListener {
                 if (this@ProfileFragment.context == null) {
                     return
                 }
-                _adapter = Adapter(this@ProfileFragment.context!!, _images)
+                _Image_adapter =
+                        ImageAdapter(this@ProfileFragment.context!!, _images)
                 activity!!.runOnUiThread {
                     swipeContainer!!.setRefreshing(false);
-                    _recyclerView!!.adapter = _adapter
-                    _adapter!!.setOnItemClickListener(this@ProfileFragment)
+                    _recyclerView!!.adapter = _Image_adapter
+                    _Image_adapter!!.setOnItemClickListener(this@ProfileFragment)
                 }
             }
         })

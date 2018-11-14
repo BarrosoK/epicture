@@ -1,8 +1,7 @@
-package com.example.root.epicture
+package com.example.root.epicture.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -25,17 +24,26 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.widget.RecyclerView
 import android.widget.ImageView
+import com.example.root.epicture.*
+import com.example.root.epicture.adapters.ImageAdapter
+import com.example.root.epicture.fragments.ProfileFragment
+import com.example.root.epicture.fragments.SearchFragment
+import com.example.root.epicture.fragments.TrendingFragment
+import com.example.root.epicture.fragments.UploadFragment
+import com.example.root.epicture.objects.ImgurProfile
+import com.example.root.epicture.objects.UserObject
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Transformation
 import okhttp3.*
 import java.io.Serializable
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, Adapter.onItemClickListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
+    ImageAdapter.onItemClickListener {
 
 
     var _avatarImageview: ImageView? = null
     var _recyclerView: RecyclerView? = null
-    var _adapter: Adapter? = null
+    var _Image_adapter: ImageAdapter? = null
     var _images = ArrayList<com.example.root.epicture.models.Image>()
     val _client = OkHttpClient()
     var _fab: FloatingActionButton? = null
@@ -55,7 +63,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         val toggle = ActionBarDrawerToggle(
-            this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+            this, drawer_layout, toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
         )
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
@@ -63,10 +73,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         fab.setOnClickListener { view ->
             var fragmentManger: FragmentManager = supportFragmentManager
             var fragmentTransaction: FragmentTransaction = fragmentManger.beginTransaction()
-            fragmentTransaction.setCustomAnimations(R.anim.design_bottom_sheet_slide_in, R.anim.design_bottom_sheet_slide_out)
+            fragmentTransaction.setCustomAnimations(
+                R.anim.design_bottom_sheet_slide_in,
+                R.anim.design_bottom_sheet_slide_out
+            )
 
             _fab!!.hide()
-            fragmentTransaction.replace(R.id.screen_area, UploadFragment())
+            fragmentTransaction.replace(
+                R.id.screen_area,
+                UploadFragment()
+            )
             fragmentTransaction.commit()
         }
 
@@ -75,8 +91,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var fragmentManger: FragmentManager = supportFragmentManager
         var fragmentTransaction: FragmentTransaction = fragmentManger.beginTransaction()
 
-        fragmentTransaction.setCustomAnimations(R.anim.design_bottom_sheet_slide_in, R.anim.design_bottom_sheet_slide_out)
-        fragmentTransaction.replace(R.id.screen_area, ProfileFragment())
+        fragmentTransaction.setCustomAnimations(
+            R.anim.design_bottom_sheet_slide_in,
+            R.anim.design_bottom_sheet_slide_out
+        )
+        fragmentTransaction.replace(
+            R.id.screen_area,
+            ProfileFragment()
+        )
         fragmentTransaction.commit()
 
         _fab = findViewById(R.id.fab)
@@ -148,12 +170,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 fragment = UploadFragment()
             }
             R.id.nav_disconnect -> {
+                val detailIntent: Intent = Intent(this, Login::class.java)
+                detailIntent.putExtra("disconnect", true)
+                startActivity(detailIntent)
+                finish()
             }
         }
         if (fragment != null) {
             var fragmentManger: FragmentManager = supportFragmentManager
             var fragmentTransaction: FragmentTransaction = fragmentManger.beginTransaction()
-            fragmentTransaction.setCustomAnimations(R.anim.design_bottom_sheet_slide_in, R.anim.design_bottom_sheet_slide_out)
+            fragmentTransaction.setCustomAnimations(
+                R.anim.design_bottom_sheet_slide_in,
+                R.anim.design_bottom_sheet_slide_out
+            )
 
             fragmentTransaction.replace(R.id.screen_area, fragment)
             fragmentTransaction.commit()
@@ -179,9 +208,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     var author = image.getString("user")
                     var imageUrl = image.getString("webformatURL")
                 }
-                _adapter = Adapter(this@MainActivity, _images)
+                _Image_adapter = ImageAdapter(this@MainActivity, _images)
                 this@MainActivity.runOnUiThread(Runnable {
-                    _recyclerView!!.adapter = _adapter
+                    _recyclerView!!.adapter = _Image_adapter
                 })
             }
         })
@@ -224,7 +253,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val email = Jdata.getString("email");
                 val avatar = Jdata.getString("avatar");
                 val cover = Jdata.getString("cover");
-                UserObject.profile = ImgurProfile(accountUrl, email, avatar, cover)
+                UserObject.profile =
+                        ImgurProfile(accountUrl, email, avatar, cover)
                 lblImgurEmail!!.text = UserObject.profile!!.email
             }
         })
@@ -239,15 +269,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         override fun transform(source: Bitmap?): Bitmap {
             var size = Math.min(source!!.getWidth(), source!!.getHeight());
 
-            var x =(source!!.width - size) / 2;
-            var y =(source!!.height - size) / 2;
+            var x = (source!!.width - size) / 2;
+            var y = (source!!.height - size) / 2;
 
-            var squaredBitmap: Bitmap = Bitmap . createBitmap (source, x, y, size, size);
+            var squaredBitmap: Bitmap = Bitmap.createBitmap(source, x, y, size, size);
             if (squaredBitmap != source) {
                 source.recycle();
             }
 
-            var bitmap: Bitmap = Bitmap . createBitmap (size, size, source.getConfig());
+            var bitmap: Bitmap = Bitmap.createBitmap(size, size, source.getConfig());
 
             var canvas: Canvas = Canvas(bitmap);
             var paint: Paint = Paint();
@@ -258,7 +288,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             );
             paint.setShader(shader);
             paint.setAntiAlias(true);
-            var r = size /2f;
+            var r = size / 2f;
             canvas.drawCircle(r, r, r, paint);
             squaredBitmap.recycle();
             return bitmap;

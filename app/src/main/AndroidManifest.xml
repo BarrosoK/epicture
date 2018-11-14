@@ -14,7 +14,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme" tools:ignore="GoogleAppIndexingWarning">
         <activity
-                android:name=".Login"
+                android:name=".activities.Login"
                 android:label="ePicture"
                 android:theme="@style/AppTheme">
             <intent-filter>
@@ -24,13 +24,13 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".MainActivity"
+                android:name=".activities.MainActivity"
                 android:label="ePicture"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".DetailActivity">
+        <activity android:name=".activities.DetailActivity">
         </activity>
-        <activity android:name=".GalleryActivity">
+        <activity android:name=".activities.GalleryActivity">
         </activity>
     </application>
 

@@ -1,4 +1,4 @@
-package com.example.root.epicture
+package com.example.root.epicture.adapters
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.root.epicture.R
 import com.example.root.epicture.models.Gallery
 import com.squareup.picasso.Picasso
 

@@ -1,4 +1,4 @@
-package com.example.root.epicture
+package com.example.root.epicture.activities
 
 import android.Manifest
 import android.support.v7.app.AppCompatActivity
@@ -8,34 +8,22 @@ import android.view.View
 import com.example.root.epicture.models.Image
 import com.squareup.picasso.Picasso
 import okhttp3.*
-import org.json.JSONObject
 import java.io.IOException
-import android.R.attr.label
-import android.content.Context.CLIPBOARD_SERVICE
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
-import android.provider.MediaStore
 import android.support.v4.content.ContextCompat
-import kotlinx.android.synthetic.main.recycler_item.*
 import android.graphics.Bitmap
-import android.R.attr.bitmap
-import android.app.Dialog
-import android.app.PendingIntent.getActivity
 import android.content.*
 import android.content.pm.PackageManager
 import android.media.MediaScannerConnection
 import android.os.Environment
-import android.os.Environment.getExternalStorageDirectory
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AlertDialog
-import android.view.LayoutInflater
 import android.widget.*
+import com.example.root.epicture.R
+import com.example.root.epicture.objects.UserObject
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class DetailActivity : AppCompatActivity() {
@@ -45,6 +33,8 @@ class DetailActivity : AppCompatActivity() {
     var _btnSave: Button? = null
     var imageView: ImageView? = null
     var isImageFitToScreen: Boolean = true
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

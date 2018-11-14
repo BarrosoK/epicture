@@ -1,17 +1,17 @@
-package com.example.root.epicture
+package com.example.root.epicture.adapters
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.root.epicture.R
 import com.example.root.epicture.models.Image
 import com.squareup.picasso.Picasso
 
-class Adapter(var _context: Context, var _images: ArrayList<Image>) : RecyclerView.Adapter<Adapter.ViewHolder>() {
+class ImageAdapter(var _context: Context, var _images: ArrayList<Image>) : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
 
     var _imageView: ImageView? = null
     var _textViewAuthor: TextView? = null
